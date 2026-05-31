@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Inference — The Restaurant Empire Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --card: #1a1e2a;
+    --border: #252a38;
+    --accent: #f4a435;
+    --accent2: #5b8cf7;
+    --accent3: #4ecb8d;
+    --accent4: #e05c7a;
+    --text: #e8eaf0;
+    --muted: #7a8099;
+    --code-bg: #0a0c12;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0d0f14 0%, #131825 50%, #0f1420 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '🏙️';
+    position: absolute;
+    font-size: 20rem;
+    opacity: 0.03;
+    top: -4rem;
+    right: -3rem;
+    line-height: 1;
+  }
+
+  .header-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .chapter-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 1.5rem;
+    letter-spacing: 0.15em;
+  }
+
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  nav a {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  nav a:hover { color: var(--accent); border-color: var(--accent); }
+
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .enemy-banner {
+    background: linear-gradient(135deg, #1a0f00, #1a1200);
+    border: 1px solid #3a2800;
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0 3rem;
+    font-size: 1.05rem;
+  }
+  .enemy-banner strong { color: var(--accent); }
+
+  section { margin-bottom: 2rem; }
+
+  .section-number {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
+  }
+
+  section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .card:hover { border-color: var(--accent2); transform: translateY(-2px); }
+
+  .card-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+  .card-title {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent2);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+  .card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+  .card .analogy {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--code-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    font-size: 0.82rem;
+    color: #c8cadf;
+    font-style: italic;
+  }
+
+  .concept {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .concept-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .concept-emoji { font-size: 1.8rem; }
+
+  .concept-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .concept-tag {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    letter-spacing: 0.1em;
+    margin-left: auto;
+  }
+  .tag-interconnect { background: #1a1a2a; color: var(--accent2); border: 1px solid #2a2a4a; }
+  .tag-memory { background: #1a2a1a; color: var(--accent3); border: 1px solid #2a4a2a; }
+  .tag-latency { background: #2a1a1a; color: var(--accent4); border: 1px solid #4a2a2a; }
+  .tag-pattern { background: #2a2000; color: var(--accent); border: 1px solid #4a3800; }
+
+  .concept p { color: var(--muted); font-size: 0.92rem; margin-bottom: 0.75rem; }
+
+  .analogy-box {
+    background: linear-gradient(135deg, #0f1a0f, #111a0f);
+    border: 1px solid #2a3a1a;
+    border-left: 4px solid var(--accent3);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin: 0.75rem 0;
+  }
+  .analogy-box .analogy-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.65rem;
+    color: var(--accent3);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.4rem;
+  }
+  .analogy-box p { color: #b8d4b8; font-size: 0.88rem; margin: 0; font-style: italic; }
+
+  .enemy-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #1a0a0a;
+    border: 1px solid #3a1515;
+    border-radius: 5px;
+    padding: 0.3rem 0.8rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.75rem;
+    color: var(--accent4);
+    margin-bottom: 0.75rem;
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.8rem;
+    color: #a8b4d0;
+    margin: 0.75rem 0;
+    overflow-x: auto;
+    line-height: 1.6;
+    white-space: pre;
+  }
+  .code-block .c-green { color: var(--accent3); }
+  .code-block .c-yellow { color: var(--accent); }
+  .code-block .c-blue { color: var(--accent2); }
+  .code-block .c-red { color: var(--accent4); }
+  .code-block .c-muted { color: #4a5068; }
+
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.85rem;
+  }
+  .summary-table th {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid var(--border);
+    background: var(--surface);
+  }
+  .summary-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: top;
+  }
+  .summary-table tr:hover td { background: var(--card); }
+  .summary-table td:first-child {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.78rem;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+  .summary-table td:nth-child(2) { color: var(--accent4); font-size: 0.82rem; }
+  .summary-table td:nth-child(3) { color: #c8cadf; font-style: italic; font-size: 0.82rem; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  .col-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+  .col-box h4 {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .col-box ul { list-style: none; }
+  .col-box ul li {
+    font-size: 0.85rem;
+    color: var(--muted);
+    padding: 0.2rem 0;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 3rem 0;
+  }
+
+  .insight {
+    background: linear-gradient(135deg, #0f1525, #131a30);
+    border: 1px solid #2a3560;
+    border-left: 4px solid var(--accent2);
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+  }
+  .insight .insight-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.65rem;
+    color: var(--accent2);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
+  }
+  .insight p { color: #b8c8f0; font-size: 1rem; margin: 0; }
+  .insight strong { color: #fff; }
+
+  .badge {
+    display: inline-block;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    vertical-align: middle;
+    margin-left: 0.4rem;
+  }
+  .badge-intra { background: #1a2a1a; color: var(--accent3); border: 1px solid #2a4a2a; }
+  .badge-cross { background: #2a1500; color: var(--accent); border: 1px solid #4a2800; }
+
+  /* Deployment pattern cards */
+  .pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+  .pattern-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .pattern-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .pattern-card.p1::before { background: var(--accent3); }
+  .pattern-card.p2::before { background: var(--accent2); }
+  .pattern-card.p3::before { background: var(--accent); }
+  .pattern-card.p4::before { background: var(--accent4); }
+
+  .pattern-num {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.4rem;
+  }
+  .p1 .pattern-num { color: var(--accent3); }
+  .p2 .pattern-num { color: var(--accent2); }
+  .p3 .pattern-num { color: var(--accent); }
+  .p4 .pattern-num { color: var(--accent4); }
+
+  .pattern-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+  .pattern-card p { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.5rem; }
+
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    margin-top: 4rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">LLM Inference Illustrated</div>
+  <h1>The Restaurant Empire Guide<br>to Hardware Scaling</h1>
+  <p>Every multi-GPU strategy in LLM inference, explained with one analogy: scaling a single kitchen into a restaurant empire.</p>
+  <div class="chapter-label">TOPOLOGY · PARALLELISM · MULTI-NODE DEPLOYMENT</div>
+</header>
+
+<nav>
+  <a href="#enemy">The New Enemy</a>
+  <a href="#topology">Topology</a>
+  <a href="#dp">Data Parallel</a>
+  <a href="#tp">Tensor Parallel</a>
+  <a href="#pp">Pipeline Parallel</a>
+  <a href="#ep">Expert Parallel</a>
+  <a href="#cp">Context Parallel</a>
+  <a href="#multinode">Multi-Node</a>
+  <a href="#patterns">Deployment</a>
+  <a href="#summary">Summary</a>
+</nav>
+
+<main>
+
+  <!-- The New Enemy -->
+  <section id="enemy">
+    <div class="enemy-banner">
+      <strong>⚔️ Section 1's Enemy:</strong> Slow HBM memory within one GPU. We fought it with FlashAttention, kernel fusion, KV cache tricks.
+      <br><br>
+      <strong>⚔️ This Section's New Enemy:</strong> The <strong>wire between GPUs</strong>. Every technique here is managing the cost of GPUs talking to each other — because the moment data has to cross a chip boundary, you pay a tax.
+      <br><br>
+      <strong>The Empire:</strong> One kitchen = one GPU. Expanding to a restaurant chain = multiple GPUs. The question is: how do kitchens coordinate without losing more time to coordination than they gain from parallelism?
+    </div>
+  </section>
+
+  <!-- TOPOLOGY -->
+  <section id="topology">
+    <div class="section-number">// 1. — HARDWARE TOPOLOGY</div>
+    <h2>The Two Wires 🔌</h2>
+
+    <div class="insight">
+      <div class="insight-label">// THE NUMBER THAT EXPLAINS EVERYTHING</div>
+      <p>NVLink: <strong>900 GB/s</strong>. InfiniBand: <strong>50 GB/s</strong>. That <strong>18× gap</strong> is why every deployment decision changes at the node boundary. It's not a preference — it's physics.</p>
+    </div>
+
+    <div class="two-col">
+      <div class="concept" style="margin:0">
+        <div class="concept-header">
+          <span class="concept-emoji">⚡</span>
+          <span class="concept-title">NVLink + NVSwitch</span>
+          <span class="concept-tag tag-interconnect">INTRA-NODE</span>
+        </div>
+        <p>Within one server: GPUs connected via NVLink at 900 GB/s. NVSwitch creates a full mesh — any GPU to any GPU at full bandwidth, no intermediate hops. Critical for all-reduce operations.</p>
+        <div class="analogy-box">
+          <div class="analogy-label">🏙️ EMPIRE ANALOGY</div>
+          <p>The internal dumbwaiter system inside one restaurant building. Dishes travel between floors instantly. Chef on floor 1 can send anything to chef on floor 8 without stepping outside.</p>
+        </div>
+      </div>
+      <div class="concept" style="margin:0">
+        <div class="concept-header">
+          <span class="concept-emoji">🐢</span>
+          <span class="concept-title">PCIe + InfiniBand</span>
+          <span class="concept-tag tag-latency">INTER-NODE</span>
+        </div>
+        <p>PCIe (~128 GB/s) connects CPU to GPUs within a node. InfiniBand (~50 GB/s, 2–5µs latency) connects nodes. 18× slower than NVLink, 20–50× more latency. Used for KV cache offload and cross-node parallelism.</p>
+        <div class="analogy-box">
+          <div class="analogy-label">🏙️ EMPIRE ANALOGY</div>
+          <p>Delivery trucks between restaurant locations across the city. Food gets there, but it takes minutes not seconds. You design menus around what's worth trucking vs making locally.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight" style="margin-top:1.25rem">
+      <div class="insight-label">// CEREBRAS — THE EXCEPTION</div>
+      <p>Cerebras WSE-3: <strong>one wafer-scale chip</strong>, 850K cores, 44GB on-chip SRAM, no HBM, no inter-chip communication. The "wire between GPUs" problem literally doesn't exist. All of this becomes irrelevant — but you're constrained to what fits on one wafer. The ultimate single kitchen, impossibly large.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- DATA PARALLELISM -->
+  <section id="dp">
+    <div class="section-number">// 2. — DATA PARALLELISM</div>
+    <h2>Data Parallelism 🍽️</h2>
+
+    <div class="concept">
+      <div class="concept-header">
+        <span class="concept-emoji">🔄</span>
+        <span class="concept-title">Copy the Whole Kitchen</span>
+        <span class="concept-tag tag-pattern">SIMPLEST</span>
+      </div>
+      <div class="enemy-box">⚔️ Kills: Throughput limits from single model replica</div>
+      <p>The entire model lives on every GPU. Different requests go to different GPUs. Zero communication during inference — each GPU runs completely independently. Pure horizontal throughput scaling.</p>
+      <div class="code-block"><span class="c-green">GPU 0:</span> Full model → handles requests 1, 5, 9...
+<span class="c-green">GPU 1:</span> Full model → handles requests 2, 6, 10...
+<span class="c-green">GPU 2:</span> Full model → handles requests 3, 7, 11...
+<span class="c-green">GPU 3:</span> Full model → handles requests 4, 8, 12...
+
+<span class="c-muted">Communication during inference: ZERO ✅</span>
+<span class="c-yellow">Constraint: entire model must fit on ONE GPU</span></div>
+      <div class="analogy-box">
+        <div class="analogy-label">🏙️ EMPIRE ANALOGY</div>
+        <p>Open identical restaurant locations across the city. Same menu, same recipes, same staff training. Each location serves its own customers independently. No coordination needed — just build more locations when demand grows.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TENSOR PARALLELISM -->
+  <section id="tp">
+    <div class="section-number">// 3. — TENSOR PARALLELISM</div>
+    <h2>Tensor Parallelism ✂️</h2>
+
+    <div class="concept">
+      <div class="concept-header">
+        <span class="concept-emoji">➗</span>
+        <span class="concept-title">Split the Weight Matrix</span>
+        <span class="concept-tag tag-interconnect">INTRA-NODE ONLY</span>
+      </div>
+      <div class="enemy-box">⚔️ Kills: Single-GPU memory limit for large weight matrices</div>
+      <p>Individual weight matrices are split across GPUs. Each GPU holds a <strong>shard of every layer</strong>. After each matmul, results must be combined via all-reduce. Two all-reduces per layer = very high communication frequency.</p>
+
+      <div class="code-block"><span class="c-muted">// Column-parallel (W_Q, W_K, W_V, W_gate, W_up)</span>
+GPU 0: x @ W[:, :d/2]  → partial columns
+GPU 1: x @ W[:, d/2:]  → partial columns
+       → all-gather to concat ✅
+
+<span class="c-muted">// Row-parallel (W_O, W_down) — pairs with column-parallel</span>
+GPU 0: x[:, :d/2] @ W[:d/2, :]  → partial sums
+GPU 1: x[:, d/2:] @ W[d/2:, :]  → partial sums
+       → all-reduce to sum ✅
+
+<span class="c-green">Trick: column then row = only ONE all-reduce for the pair!</span>
+
+<span class="c-muted">// Attention heads align NATURALLY with TP</span>
+GPU 0 owns heads 0..H/2  → full attention, own KV cache
+GPU 1 owns heads H/2..H  → full attention, own KV cache
+<span class="c-green">KV cache shards for free — no extra coordination!</span></div>
+
+      <div class="analogy-box">
+        <div class="analogy-label">🏙️ EMPIRE ANALOGY</div>
+        <p>Two sous chefs split the recipe book in half — chef A handles all savory components, chef B handles all finishing sauces. They work simultaneously, then combine at plating. Fast — but they must pass plates to each other <strong>every single course</strong>. They must work in the same kitchen (NVLink) or the passing takes too long.</p>
+      </div>
+
+      <div class="code-block"><span class="c-red">Communication cost:</span>
+  2 all-reduces × 80 layers = 160 all-reduces per forward pass
+  At D=8192, B=32: ~2.7 GB of comms per forward pass
+  → MUST have NVLink (900 GB/s)
+  → InfiniBand (50 GB/s) would add 320–800µs per token ❌</div>
+
+      <p><strong style="color:var(--accent3)">Hidden bonus:</strong> More GPUs = weights spread thinner = more HBM per GPU free for KV cache. A 70B model on 8 GPUs leaves ~62 GB per GPU for KV cache vs ~20 GB on 2 GPUs. TP isn't just about fitting the model — it's about freeing serving memory.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PIPELINE PARALLELISM -->
+  <section id="pp">
+    <div class="section-number">// 4. — PIPELINE PARALLELISM</div>
+    <h2>Pipeline Parallelism 🏭</h2>
+
+    <div class="concept">
+      <div class="concept-header">
+        <span class="concept-emoji">🔗</span>
+        <span class="concept-title">Split the Layers</span>
+        <span class="concept-tag tag-pattern">CROSS-NODE OK</span>
+      </div>
+      <div class="enemy-box">⚔️ Kills: Model depth too large for one node</div>
+      <p>Assign whole layer groups to each GPU. Activations flow forward stage-by-stage like an assembly line. Communication is <strong>point-to-point between adjacent stages only</strong> — no all-reduce, infrequent, small volume. Works across slow inter-node links.</p>
+
+      <div class="code-block"><span class="c-blue">GPU 0 (Stage 1):</span> layers  1–20  → sends activations [B, D] to GPU 1
+<span class="c-blue">GPU 1 (Stage 2):</span> layers 21–40  → sends activations [B, D] to GPU 2
+<span class="c-blue">GPU 2 (Stage 3):</span> layers 41–60  → sends activations [B, D] to GPU 3
+<span class="c-blue">GPU 3 (Stage 4):</span> layers 61–80  → output ✅
+
+<span class="c-muted">Communication volume: D × B bytes per boundary</span>
+<span class="c-muted">= 8192 × 32 × 2 bytes = ~0.5 MB (trivial on any link)</span>
+<span class="c-green">vs TP's ~34 MB per layer — 68× less per event, far less frequent</span></div>
+
+      <div class="analogy-box">
+        <div class="analogy-label">🏙️ EMPIRE ANALOGY</div>
+        <p>Assembly line across restaurant locations: Location A does prep, hands ingredients to Location B for cooking, which hands to Location C for plating, then D for service. Each location specializes in its stage. A dish travels the whole chain — but each location only hands one box to the next, not a constant stream of plates back and forth.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="concept-header">
+        <span class="concept-emoji">💭</span>
+        <span class="concept-title">The Pipeline Bubble</span>
+        <span class="concept-tag tag-latency">THE PROBLEM</span>
+      </div>
+      <p>With P stages and one request, only one stage is active at a time. Bubble fraction = <strong>(P-1)/P</strong>. At P=4: 75% of hardware idle at any given moment.</p>
+
+      <div class="code-block"><span class="c-red">ONE REQUEST, 4 stages:</span>
+Stage 1: ████░░░░░░░░  (works then waits)
+Stage 2: ░░░░████░░░░  (waits, works, waits)
+Stage 3: ░░░░░░░░████  (long wait, brief work)
+Stage 4: ░░░░░░░░░░██  (longest wait)
+
+<span class="c-green">MANY REQUESTS (continuous batching fills the pipeline):</span>
+Stage 1: ████████████  always busy
+Stage 2: ░███████████  fills quickly
+Stage 3: ░░██████████  fills quickly
+Stage 4: ░░░█████████  fills quickly
+
+<span class="c-yellow">Inference escapes the bubble because:</span>
+<span class="c-yellow">1. Decode = 1 token/step → short pipeline latency per step</span>
+<span class="c-yellow">2. Continuous batching keeps many requests in flight always</span></div>
+
+      <div class="analogy-box">
+        <div class="analogy-label">🏙️ EMPIRE ANALOGY</div>
+        <p>One customer through the assembly line = 3 locations idle while the 4th serves them. But a Saturday dinner rush? All 4 locations run at full capacity simultaneously, each handling a different customer's order at a different stage. The bubble disappears when the pipeline stays full.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- EXPERT PARALLELISM -->
+  <section id="ep">
+    <div class="section-number">// 5. — EXPERT PARALLELISM</div>
+    <h2>Expert Parallelism 🧑‍🍳</h2>
+
+    <div class="insight">
+      <div class="insight-label">// THE MOE BARGAIN</div>
+      <p>MoE models decouple parameters from compute. <strong>256 experts exist, 8 activate per token.</strong> Total parameters: huge. Active compute: small. Memory cost: huge — which is exactly what EP distributes.</p>
+    </div>
+
+    <div class="concept">
+      <div class="concept-header">
+        <span class="concept-emoji">🗺️</span>
+        <span class="concept-title">Route Tokens to Expert GPUs</span>
+        <span class="concept-tag tag-pattern">ALL-TO-ALL</span>
+      </div>
+      <div class="enemy-box">⚔️ Kills: Can't fit 256 experts on one GPU</div>
+      <p>Experts are sharded across GPUs. A router decides which 8 experts each token needs. Tokens travel to the GPUs holding their assigned experts, compute, then results return. Communication pattern is <strong>all-to-all</strong> — unpredictable and irregular.</p>
+
+      <div class="code-block"><span class="c-muted">256 experts, 4 GPUs:</span>
+GPU 0: experts   0–63
+GPU 1: experts  64–127
+GPU 2: experts 128–191
+GPU 3: experts 192–255
+
+Token A needs experts {7, 45, 89, 134, 156, 201, 223, 251}
+→ must visit GPU 0, GPU 0, GPU 1, GPU 2, GPU 2, GPU 3, GPU 3, GPU 3
+
+<span class="c-yellow">All-to-all: every GPU sends tokens TO and receives FROM every other</span>
+<span class="c-yellow">Pattern changes every token — can't pre-schedule like CUDA graphs</span>
+
+<span class="c-red">Hot expert problem:</span>
+If everyone routes to Expert 7 → GPU 0 overwhelmed
+Other GPUs idle → load imbalance
+Fix: auxiliary load-balancing loss during training</div>
+
+      <div class="analogy-box">
+        <div class="analogy-label">🏙️ EMPIRE ANALOGY</div>
+        <p>256 specialist chefs, each expert in one dish (sushi, BBQ, pasta...), spread across 4 restaurant locations. Every customer order picks 8 specialists. The order must physically travel to each specialist's location. If Chef 7 (the famous pasta chef) is everyone's favorite, his location is overwhelmed while others sit empty — you need a maitre d' who forces variety to keep all locations busy.</p>
+      </div>
+
+      <p><strong style="color:var(--accent3)">Why EP tolerates cross-node better than TP:</strong> EP's all-to-all can overlap with local expert computation. TP's all-reduce is fully blocking — next layer can't start. EP is latency-tolerant by design, making cross-node EP viable where cross-node TP is not.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CONTEXT PARALLELISM -->
+  <section id="cp">
+    <div class="section-number">// 6. — CONTEXT / SEQUENCE PARALLELISM</div>
+    <h2>Context Parallelism & Ring Attention 💍</h2>
+
+    <div class="concept">
+      <div class="concept-header">
+        <span class="concept-emoji">🔄</span>
+        <span class="concept-title">Split the Sequence</span>
+        <span class="concept-tag tag-interconnect">LONG CONTEXT</span>
+      </div>
+      <div class="enemy-box">⚔️ Kills: KV cache overflow for ultra-long sequences</div>
+      <p>FlashAttention handles O(S²) compute within one GPU by tiling in SRAM. But for 128K+ token sequences, even O(S) KV storage overflows one GPU's HBM. Context Parallelism splits the sequence across GPUs.</p>
+
+      <div class="code-block"><span class="c-muted">128K token prompt, 4 GPUs:</span>
+GPU 0: tokens     0–32K  (Q_0, K_0, V_0)
+GPU 1: tokens 32K–64K   (Q_1, K_1, V_1)
+GPU 2: tokens 64K–96K   (Q_2, K_2, V_2)
+GPU 3: tokens 96K–128K  (Q_3, K_3, V_3)
+
+<span class="c-muted">Problem: attention is GLOBAL — Q_0 must attend to K_3, V_3!</span>
+
+<span class="c-green">Ring Attention solution:</span>
+Step 0: each GPU computes attention with LOCAL K,V
+Step 1: K,V rotate one step around the ring
+        GPU 0 gets K_3,V_3 → accumulates partial scores
+        GPU 1 gets K_0,V_0 → accumulates partial scores
+Step 2: rotate again, accumulate
+Step 3: rotate again, accumulate
+<span class="c-green">After T steps: every GPU has seen ALL K,V → full attention ✅</span>
+
+<span class="c-yellow">Online softmax (from FlashAttention) makes partial accumulation work</span>
+<span class="c-yellow">Compute and ring communication overlap → comms hidden</span></div>
+
+      <div class="analogy-box">
+        <div class="analogy-label">🏙️ EMPIRE ANALOGY</div>
+        <p>A food critic must taste 10,000 dishes but her table only holds 2,500 at once. Four critics each hold 2,500 dishes and pass their trays around a circular table. Each critic tastes every combination in rotation, keeping running notes (online softmax) on the best flavors so far. After one full rotation: every critic has effectively tasted all 10,000 — but the table was never overloaded.</p>
+      </div>
+
+      <p><strong style="color:var(--accent)">Primarily a prefill problem</strong> — 128K token prompt hits CP. During decode you generate one token at a time, but the accumulated KV cache still grows, so very long sessions eventually stress it too.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- COMMUNICATION COST -->
+  <section id="multinode">
+    <div class="section-number">// 7. — COMMUNICATION COST ANALYSIS</div>
+    <h2>The Cost Table 📊</h2>
+
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Strategy</th>
+          <th>Collective Op</th>
+          <th>Ops / Layer</th>
+          <th>Volume per Op</th>
+          <th>Best Interconnect</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>TP</td>
+          <td style="color:var(--accent4)">All-reduce</td>
+          <td style="color:var(--accent4)">2</td>
+          <td style="color:#c8cadf;font-style:italic">2 × (T-1)/T × D × B</td>
+          <td><span class="badge badge-intra">NVLink only</span></td>
+        </tr>
+        <tr>
+          <td>PP</td>
+          <td style="color:var(--accent3)">Point-to-point</td>
+          <td style="color:var(--accent3)">1</td>
+          <td style="color:#c8cadf;font-style:italic">D × B (activations)</td>
+          <td><span class="badge badge-cross">Network OK</span></td>
+        </tr>
+        <tr>
+          <td>EP</td>
+          <td style="color:var(--accent)">All-to-all</td>
+          <td style="color:var(--accent)">2</td>
+          <td style="color:#c8cadf;font-style:italic">routing-dependent</td>
+          <td><span class="badge badge-cross">Network OK</span></td>
+        </tr>
+        <tr>
+          <td>CP/SP</td>
+          <td style="color:var(--accent2)">Ring-pass</td>
+          <td style="color:var(--accent2)">T or 2</td>
+          <td style="color:#c8cadf;font-style:italic">O((S/T) × D) per step</td>
+          <td><span class="badge badge-intra">NVLink preferred</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="insight">
+      <div class="insight-label">// THE LATENCY FLOOR — MULTI-NODE</div>
+      <p>InfiniBand round-trip: <strong>2–5µs</strong> vs NVLink's <strong>~100ns</strong>. TP cross-node: 160 blocking round trips × 2–5µs = <strong>320–800µs added per token</strong>. PP cross-node: a few µs per stage boundary. This is why TP is forbidden cross-node and PP is the natural cross-node strategy.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- DEPLOYMENT PATTERNS -->
+  <section id="patterns">
+    <div class="section-number">// 8. — PRACTICAL DEPLOYMENT PATTERNS</div>
+    <h2>How Real Systems Are Built 🏗️</h2>
+
+    <div class="pattern-grid">
+      <div class="pattern-card p1">
+        <div class="pattern-num">// PATTERN 1</div>
+        <h3>DP Across Nodes</h3>
+        <p>Model fits on one node. Run independent replicas on each node. Zero cross-node communication during inference.</p>
+        <div class="analogy-box" style="margin-top:0.75rem">
+          <div class="analogy-label">🏙️ ANALOGY</div>
+          <p>Franchise model. Each location is fully self-contained. No coordination needed. Just open more locations.</p>
+        </div>
+      </div>
+
+      <div class="pattern-card p2">
+        <div class="pattern-num">// PATTERN 2</div>
+        <h3>TP within Node + PP across Nodes</h3>
+        <p>Standard approach for large dense models. NVLink handles TP's frequent all-reduces. InfiniBand handles PP's rare activation handoffs.</p>
+        <div class="analogy-box" style="margin-top:0.75rem">
+          <div class="analogy-label">🏙️ ANALOGY</div>
+          <p>Each building has its own tightly coordinated kitchen team (TP via dumbwaiter). Buildings connect via delivery truck (PP via InfiniBand) — trucks only carry one box between stages.</p>
+        </div>
+      </div>
+
+      <div class="pattern-card p3">
+        <div class="pattern-num">// PATTERN 3</div>
+        <h3>TP within Node + EP across Nodes (MoE)</h3>
+        <p>For MoE models. EP's all-to-all is more latency-tolerant than TP's all-reduce, making cross-node EP viable where cross-node TP is not.</p>
+        <div class="analogy-box" style="margin-top:0.75rem">
+          <div class="analogy-label">🏙️ ANALOGY</div>
+          <p>Specialist chefs distributed across the city. Orders travel to wherever the right specialist works. The routing is flexible — unlike TP's rigid every-layer-sync.</p>
+        </div>
+      </div>
+
+      <div class="pattern-card p4">
+        <div class="pattern-num">// THE EXCEPTION</div>
+        <h3>Cerebras WSE</h3>
+        <p>One wafer = one chip = no boundaries. All of this becomes irrelevant. 44GB on-chip SRAM. No HBM. No inter-chip comms. The "delivery truck" problem simply doesn't exist.</p>
+        <div class="analogy-box" style="margin-top:0.75rem">
+          <div class="analogy-label">🏙️ ANALOGY</div>
+          <p>One impossibly gigantic kitchen where every chef works side by side. No trucks needed. This guide's entire problem set dissolves.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">// THE HIDDEN KV CACHE BONUS</div>
+      <p>More GPUs = weights spread thinner = <strong>more HBM per GPU free for KV cache</strong>. 70B FP16 on 8 GPUs: 17.5 GB weights per GPU, leaving ~62 GB for KV cache. With INT4 quantization: ~4.4 GB weights, ~75 GB for KV cache. TP isn't just about fitting the model — every additional GPU is also a throughput multiplier via larger serving memory.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- MASTER SUMMARY -->
+  <section id="summary">
+    <div class="section-number">// MASTER SUMMARY</div>
+    <h2>The Complete Empire Guide 📖</h2>
+
+    <div class="insight">
+      <div class="insight-label">// ONE UNIFYING IDEA</div>
+      <p>Every technique here fights the same battle: <strong>the wire between GPUs costs time</strong>. Design your parallelism strategy so that the most expensive communication travels the fastest wire, and the slowest wire carries the least data.</p>
+    </div>
+
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Technique</th>
+          <th>Enemy Killed</th>
+          <th>Empire Analogy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>NVLink / NVSwitch</td>
+          <td>Slow intra-node comms</td>
+          <td>High-speed dumbwaiter between floors of one building</td>
+        </tr>
+        <tr>
+          <td>PCIe / InfiniBand</td>
+          <td>— inter-node reality —</td>
+          <td>Delivery trucks between city locations — 18× slower</td>
+        </tr>
+        <tr>
+          <td>Data Parallelism</td>
+          <td>Single-replica throughput</td>
+          <td>Open identical franchise locations — zero coordination</td>
+        </tr>
+        <tr>
+          <td>Tensor Parallelism</td>
+          <td>Single-GPU weight memory</td>
+          <td>Two sous chefs split the recipe book, pass plates every course</td>
+        </tr>
+        <tr>
+          <td>Column-Parallel</td>
+          <td>Weight matrix too wide</td>
+          <td>Each chef handles different output columns — concat at end</td>
+        </tr>
+        <tr>
+          <td>Row-Parallel</td>
+          <td>Paired with column-parallel</td>
+          <td>Each chef sums different input rows — add results together</td>
+        </tr>
+        <tr>
+          <td>Attention Head Split</td>
+          <td>Attention doesn't parallelize</td>
+          <td>Each chef owns specific tables — KV cache shards naturally</td>
+        </tr>
+        <tr>
+          <td>Pipeline Parallelism</td>
+          <td>Model depth across nodes</td>
+          <td>Assembly line: prep → cook → plate across locations</td>
+        </tr>
+        <tr>
+          <td>Pipeline Bubble</td>
+          <td>— the PP problem —</td>
+          <td>Assembly line idle when only one customer — needs busy dinner rush</td>
+        </tr>
+        <tr>
+          <td>Micro-batching</td>
+          <td>Pipeline bubble</td>
+          <td>Keep all assembly line stages busy with many simultaneous orders</td>
+        </tr>
+        <tr>
+          <td>Expert Parallelism</td>
+          <td>256 experts won't fit one GPU</td>
+          <td>Specialist chefs distributed across city — orders route to them</td>
+        </tr>
+        <tr>
+          <td>Hot Expert Problem</td>
+          <td>— EP load imbalance —</td>
+          <td>Everyone wants the famous pasta chef — his location overwhelmed</td>
+        </tr>
+        <tr>
+          <td>Load Balancing Loss</td>
+          <td>Hot expert imbalance</td>
+          <td>Maitre d' forces customers to try other specialists</td>
+        </tr>
+        <tr>
+          <td>Context Parallelism</td>
+          <td>128K+ sequence KV overflow</td>
+          <td>Four critics each hold 2500 dishes, pass trays around the table</td>
+        </tr>
+        <tr>
+          <td>Ring Attention</td>
+          <td>Global attention needs all KV</td>
+          <td>Tray rotation — each critic sees all dishes after one full round</td>
+        </tr>
+        <tr>
+          <td>TP within + PP across</td>
+          <td>Dense model multi-node</td>
+          <td>Fast dumbwaiter inside, trucks only between buildings</td>
+        </tr>
+        <tr>
+          <td>TP within + EP across</td>
+          <td>MoE model multi-node</td>
+          <td>Specialist routing across city — more flexible than rigid sync</td>
+        </tr>
+        <tr>
+          <td>KV Cache Bonus</td>
+          <td>Serving memory pressure</td>
+          <td>More locations = less storage needed at each = more counter space</td>
+        </tr>
+        <tr>
+          <td>Cerebras WSE</td>
+          <td>All of this</td>
+          <td>One impossibly huge kitchen — no trucks needed ever</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="insight" style="margin-top:2rem">
+      <div class="insight-label">// HOW THE THREE SECTIONS FIT TOGETHER</div>
+      <p>
+        <strong>Scheduling (Ch 5):</strong> Time is scarce — schedule requests to maximize GPU utilization.<br>
+        <strong>Single Request (Ch 6):</strong> Memory bandwidth is scarce — minimize HBM trips within one GPU.<br>
+        <strong>Hardware Scaling (Ch 7):</strong> Memory capacity + wire bandwidth are scarce — shard everything, match parallelism to interconnect speed.<br><br>
+        Every section is fighting scarcity at a different level of the same system. The next section shows how vLLM and TensorRT-LLM automate all of this based on detected hardware.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  LLM Inference Illustrated — Hardware Scaling Study Guide &nbsp;·&nbsp; Based on tedkyi.github.io/llm-inference &nbsp;·&nbsp; The Restaurant Empire Edition
+</footer>
+
+</body>
+</html>
